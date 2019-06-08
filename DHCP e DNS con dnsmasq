@@ -1,0 +1,66 @@
+### DNSMASQ, come configurare DHCP e DNS server per una LAN ###
+
+Dnsmasq é un pacchetto che ci permette di creare DNS e DHCP server per una rete LAN.
+E' uno strumento adatto per le reti LAN di piccole dimensioni e non é uno strumento avanzato.
+Tuttavia svolge il suo lavoro.
+Ho deciso di utilizzare DNSMASQ per gestire il DHCP e il DNS della mia LAN.
+
+
+>Infrastruttura LAN
+
+INTERNET ------- <ROUTER FRITZBOX 192.168.100.254> --- Cavo Ethernet----- RASPBERRY(dnsmasq)
+
+
+> Installazione DNSMASQ
+
+sudo apt-get install dnsmasq && dnsutils -y
+
+> Configurazione DHCP
+
+sudo mv /etc/dnsmasq.conf /etc/dnsmasq.conf.old
+sudo nano /etc/dnsmasq.conf
+
+Nel mio caso la rete LAN é 192.168.100.0/24 (cambiare piano IP in base alle esigenze).
+Decidere il dominio (nome della lan)
+
+Configurazione:
+
+*************DHCP LAN DOMESTICA****************
+expand-hosts
+domain=nome_dominio.lan
+dhcp-range=192.168.100.100,192.168.100.150,255.255.255.0,8h
+dhcp-option=3,192.168.100.254
+
+#DNS forwarder
+resolv-file=/etc/dnsforw.conf
+strict-order
+proxy-dnssec
+
+#***********OPZIONI AVANZATE DHCP*************
+#NTP SERVER
+dhcp-option=42,193.204.114.232
+#Broadcast
+dhcp-option=28,192.168.100.255
+
+
+Poi creare file "dnsforw.conf" --> Indica quali server utilizzare quando la risorsa cercata non é nella LAN
+sudo nano /etc/dnsforw.conf
+
+Aggiungere le voci:
+nameserver 208.67.222.222
+nameserver 8.8.8.8
+
+
+> Configurazione DNS
+
+I DNS vengono gestiti  utilizzando un file di sistema, ovvero il file "hosts".
+
+Per aggiungere record DNS procedere nel seguente modo:
+- editare il file hosts digitando "sudo nano /etc/hosts"
+- Aggiungere alla fine del file  il record
+  192.168.100.1	PC01
+
+
+> Salvare tutto e riavviare il servizio --> service dnsmasq restart
+
+
