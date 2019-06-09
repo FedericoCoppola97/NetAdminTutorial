@@ -1,0 +1,57 @@
+##### Create streaming music server #####
+
+In this tutorial I want show you how to create a streaming music server on Linux.
+In my case my hardware platform is Raspberry PI 3, but you can done all this steps on other hardware platforms.
+
+1)Become a root user
+
+2) Install Java
+apt install openjdk-8-jre
+update-alternatives --config java
+
+3) Download AirSonic
+wget https://github.com/airsonic/airsonic/releases/download/v10.3.1/airsonic.war.asc
+
+4) Create a folder for AirSonic and copy software in this folder
+mkdir /var/airsonic/
+mkdir /var/arisonic/music (folder to contain music)
+mv airsonic.war /var/airsonic/
+
+5) Create script to startup AirSonic at boot
+cd (just to come back to the root folder)
+touch airsonicstart.sh
+chmod a+x airsonicstart.sh
+nano airsonicstart.sh
+Paste the following line in the empty file:
+
+#! /bin/sh
+java -jar /var/airsonic/airsonic.war
+
+Save the file
+
+6) Configure rc.local
+nano /etc/rc.local
+
+Add the following line before "exit 0":
+bash /root/airsonicstart.sh
+
+7) Reboot the system and wait a few minutes
+
+8) Connect to the AirSonic server http://IP_ADDR:8080 or http://localhost:8080
+The default password is admin/admin
+
+It works!
+
+
+HOW TO SET MUSIC FOLDER?
+AirSonic home page > Settings > Media Folder > set "/var/airsonic/music"
+
+HOW TO UPLOAD MUSIC FROM WEB INTERFACE?
+AirSonic home page > More > Upload File (in the middle of the page) > Choose file and set path as "/var/airsonic/music" > wait a few seconds > Complete!
+
+HOW TO PERMIT AN USER TO ACCESS TO THE FOLDER MUSIC?
+AirSonic home page > Settings > Users > Select the user > Check the folders in "Allow access to these media folders" section
+
+
+
+Federico Coppola
